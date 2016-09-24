@@ -9,7 +9,7 @@
     <color name="textColorPrimary">#000000</color>
     <color name="textColorSecondary">#87000000</color>
 
-    <color name="divider">#12FFFFFF</color>
+    <color name="divider">#12000000</color>
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#FFFFFF</color>
 </resources>

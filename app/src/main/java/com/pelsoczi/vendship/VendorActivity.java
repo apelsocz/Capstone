@@ -2,15 +2,18 @@ package com.pelsoczi.vendship;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class VendorActivity extends AppCompatActivity {
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
+    private FloatingActionButton mFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,15 @@ public class VendorActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
 //        mTwoPane = findViewById(R.id.container_detail) != null;
+
+        mFAB = (FloatingActionButton) findViewById(R.id.floating_action_btn);
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), SearchActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
