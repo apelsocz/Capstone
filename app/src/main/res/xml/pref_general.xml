@@ -6,8 +6,19 @@
         android:title="@string/pref_location_label"
         android:key="@string/pref_location_key"
         android:defaultValue="@string/pref_location_default"
+        android:summary="@string/pref_location_default"
         android:inputType="textCapCharacters"
         android:singleLine="true"
         android:textAllCaps="true"/>
+
+    <PreferenceCategory
+        android:title="@string/pref_distance_category_title">
+        <ListPreference
+            android:title="@string/pref_distance_label"
+            android:key="@string/pref_distance_key"
+            android:defaultValue="@string/pref_distance_default"
+            android:entryValues="@array/pref_distance_values"
+            android:entries="@array/pref_distance_options" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
