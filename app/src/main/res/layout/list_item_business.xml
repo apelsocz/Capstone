@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vendor_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primaryColor"
+    tools:context=".VendorActivity">
+    
+    <ImageView
+        android:id="@+id/vendor_image"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true"
+        android:layout_alignParentEnd="true"/>
+
+    <TextView
+        android:id="@+id/vendor_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:padding="4dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/textColorSecondary"
+        tools:text="Coffee &amp; Tea"/>
+
+    <TextView
+        android:id="@+id/vendor_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:padding="4dp"
+        android:layout_below="@id/vendor_category"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        tools:text="Four Barrel Coffee"/>
+
+    <ImageView
+        android:id="@+id/vendor_rating_image"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:padding="4dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/vendor_name"
+        android:scaleType="fitStart"
+        android:adjustViewBounds="true" />
+
+    <TextView
+        android:id="@+id/vendor_rating"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_toEndOf="@id/vendor_rating_image"
+        android:layout_below="@id/vendor_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        tools:text="1738"/>
+
+    <TextView
+        android:id="@+id/vendor_snippet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:padding="4dp"
+        android:layout_below="@id/vendor_rating"
+        android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        tools:text="What would I do without Yelp?\n\nI wouldn't be HALF the foodie I've become it weren't for this business.    \n\nYelp makes it virtually effortless to discover new..."/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider">
+
+    </View>
+
+</RelativeLayout>

@@ -1,6 +1,8 @@
 package com.pelsoczi.vendship;
 
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +24,10 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.pelsoczi.vendship.util.Utility;
+import com.pelsoczi.vendship.util.Yelp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -36,6 +42,7 @@ public class SearchActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
 
     public static class SearchFragment extends Fragment {
 
@@ -93,13 +100,11 @@ public class SearchActivity extends AppCompatActivity {
                 mSortGroup.check(R.id.search_sort_default);
             }
 
-            // max distance from YelpAPI = 40000
-            final int MAX_DISTANCE = 4;
-            mDistanceSeek.setMax(MAX_DISTANCE);
+            mDistanceSeek.setMax(Utility.MAX_PROGRESS);
             mDistanceSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    Log.i(TAG, String.valueOf(progress));
+                    mDistanceLabel.setText(Utility.getPreferredRadiusLabel(getActivity(), progress));
                 }
 
                 @Override
@@ -107,9 +112,6 @@ public class SearchActivity extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {}
             });
-
-            mDistanceLabel.setText(Utility.getPreferredMeasureUnits(getActivity()));
-            //// TODO: 16-09-25 preferences km / mile conversion
 
             //// TODO: 16-09-23 savedInstanceState
         }
@@ -151,10 +153,38 @@ public class SearchActivity extends AppCompatActivity {
             int id = item.getItemId();
 
             if (id == R.id.action_search) {
-                //// TODO: 16-09-25 execute task
+                yelp();
                 return true;
             }
             return super.onOptionsItemSelected(item);
+        }
+
+        private void yelp() {
+            JSONObject json = new JSONObject();
+            try {
+                json.put(Yelp.PARAM_TERM, mKeyword.getText().toString());
+                json.put(Yelp.PARAM_LOCATION, mLocation.getText().toString());
+
+                if (mSortDistance.isChecked()) {
+                    json.put(Yelp.PARAM_SORT_BY, "1");
+                }
+                else if (mSortRating.isChecked()) {
+                    json.put(Yelp.PARAM_SORT_BY, "2");
+                }
+
+                int progress = mDistanceSeek.getProgress();
+                if (progress != 0) {
+                    //// TODO: 16-09-27 remove decimal places
+                    json.put(Yelp.PARAM_RADIUS, Utility.getPreferredConversion(getActivity(), progress));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                Intent result = new Intent();
+                result.putExtra(Yelp.KEY_YELP, json.toString());
+                getActivity().setResult(Activity.RESULT_OK, result);
+                getActivity().finish();
+            }
         }
     }
 }

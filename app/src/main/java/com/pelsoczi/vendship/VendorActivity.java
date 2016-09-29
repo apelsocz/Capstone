@@ -1,5 +1,6 @@
 package com.pelsoczi.vendship;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -9,7 +10,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.pelsoczi.vendship.ui.VendorsFragment;
+import com.pelsoczi.vendship.util.Yelp;
+
 public class VendorActivity extends AppCompatActivity {
+
+    public static final int SEARCH_YELP_REQUEST = 1;
 
     private boolean mTwoPane;
     private Toolbar mToolbar;
@@ -30,9 +36,20 @@ public class VendorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), SearchActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, SEARCH_YELP_REQUEST);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SEARCH_YELP_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (data.hasExtra(Yelp.KEY_YELP)) {
+                VendorsFragment fragment = (VendorsFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.container_vendor);
+                fragment.searchYelp(data.getStringExtra(Yelp.KEY_YELP));
+            }
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,10 +16,14 @@ import android.view.ViewGroup;
 
 import com.pelsoczi.vendship.BuildConfig;
 import com.pelsoczi.vendship.R;
+import com.pelsoczi.vendship.util.Yelp;
 import com.yelp.clientlib.connection.YelpAPI;
 import com.yelp.clientlib.connection.YelpAPIFactory;
 import com.yelp.clientlib.entities.Business;
 import com.yelp.clientlib.entities.SearchResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +42,8 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     private Bundle mSavedInstanceState;
     private RecyclerView mRecycler;
+    private Adapter mAdapter;
+    private ArrayList<Business> mBusinesses;
 
     private FloatingActionButton mFAB;
 
@@ -47,7 +54,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_vendors, container, false);
-//        mRecycler = (RecyclerView) rootView.findViewById(R.id.recycler_view_vendors);
+        mRecycler = (RecyclerView) rootView.findViewById(R.id.recycler_view_vendors);
         return rootView;
     }
 
@@ -65,7 +72,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
         /** Update the Activity's title */
 //        ((VendorActivity)getActivity()).updateUI();
 
-        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+//        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
 
 //        mFAB = (FloatingActionButton)getActivity().findViewById(R.id.floating_action_btn);
 //        mFAB.setOnClickListener(new View.OnClickListener() {
@@ -76,44 +83,78 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 //        });
     }
 
-    private void yelp() {
-        YelpAPIFactory apiFactory = new YelpAPIFactory(
-                BuildConfig.YELP_CONSUMER_KEY,
-                BuildConfig.YELP_CONSUMER_SECRET,
-                BuildConfig.YELP_TOKEN,
-                BuildConfig.YELP_TOKEN_SECRET);
-        YelpAPI yelpAPI = apiFactory.createAPI();
-
-        Map<String, String> params = new HashMap<>();
-
-        params.put("term", "food");
-        params.put("limit", "3");
-
-        Call<SearchResponse> call = yelpAPI.search("San Francisco", params);
-        Callback<SearchResponse> callback = new Callback<SearchResponse>() {
-            @Override
-            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                SearchResponse searchResponse = response.body();
-                ArrayList<Business> businesses = searchResponse.businesses();
-
-                for (Business busines : businesses) {
-                    Log.i(LOG_TAG, busines.toString());
-                }
-
-            }
-            @Override
-            public void onFailure(Call<SearchResponse> call, Throwable t) {
-                //// TODO: 16-09-21 handle http error
-                Log.i(LOG_TAG, "onFailure");
-                t.printStackTrace();
-            }
-        };
-        call.enqueue(callback);
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    public void searchYelp(String jsonAsString) {
+        try {
+            JSONObject jsonObject = new JSONObject(jsonAsString);
+
+            String location = jsonObject.optString(Yelp.PARAM_LOCATION);
+
+            Map<String, String> params = new HashMap<>();
+            params.put(Yelp.PARAM_TERM, jsonObject.optString(Yelp.PARAM_TERM));
+            if (jsonObject.has(Yelp.PARAM_SORT_BY)) {
+                params.put(Yelp.PARAM_SORT_BY, jsonObject.optString(Yelp.PARAM_SORT_BY));
+            }
+            if (jsonObject.has(Yelp.PARAM_RADIUS)) {
+                params.put(Yelp.PARAM_RADIUS, jsonObject.optString(Yelp.PARAM_RADIUS));
+            }
+
+            YelpAPIFactory apiFactory = new YelpAPIFactory(
+                    BuildConfig.YELP_CONSUMER_KEY,
+                    BuildConfig.YELP_CONSUMER_SECRET,
+                    BuildConfig.YELP_TOKEN,
+                    BuildConfig.YELP_TOKEN_SECRET);
+
+            YelpAPI yelpAPI = apiFactory.createAPI();
+            Call<SearchResponse> call = yelpAPI.search(location, params);
+
+            Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+                @Override
+                public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                    SearchResponse searchResponse = response.body();
+//                    ArrayList<Business> businesses = searchResponse.businesses();
+//                    for (Business busines : businesses) {
+//                        Log.i(TAG, busines.toString());
+//                    }
+                    mBusinesses = searchResponse.businesses();
+                    updateRecyclerView();
+                }
+                @Override
+                public void onFailure(Call<SearchResponse> call, Throwable t) {
+                    //// TODO: 16-09-21 handle http error
+                    Log.i(TAG, "onFailure");
+                    t.printStackTrace();
+                }
+            };
+            call.enqueue(callback);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateRecyclerView() {
+        initRecyclerView();
+//        if (mSavedInstanceState != null) {
+//            String savedSort = mSavedInstanceState.getString(STATE_SORT, "");
+//            if (savedSort.equals(Utility.getSortOrder(getActivity()))) {
+//                mRecycler.getLayoutManager()
+//                        .onRestoreInstanceState(mSavedInstanceState.getParcelable(STATE_LAYOUT));
+//            }
+//        }
+//        updateDetails();
+    }
+
+    private void initRecyclerView() {
+        mAdapter = new Adapter(getActivity(), mBusinesses);
+        mRecycler.setAdapter(mAdapter);
+        mRecycler.setItemAnimator(null);
+        mRecycler.setLayoutManager(
+                new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        Log.i(LOG_TAG, "initRecyclerView");
     }
 
     @Override
@@ -122,9 +163,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-    }
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {}
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {

@@ -2,6 +2,8 @@ package com.pelsoczi.vendship.util;
 
 public class Yelp {
 
+    public static final String KEY_YELP = "yelpKey";
+
     /**
      * General Params
      * */
