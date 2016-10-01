@@ -102,7 +102,12 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
             name.setText(business.name());
 
-            snippet.setText(business.snippetText());
+            if (business.snippetText() != null) {
+                snippet.setText(business.snippetText());
+            }
+            else {
+                snippet.setVisibility(View.GONE);
+            }
 
             rating.setText(String.valueOf(business.reviewCount()));
 
@@ -112,9 +117,11 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
                     categories += business.categories().get(i).name();
                     categories += i < business.categories().size()-1 ? ", " : "";
                 }
+                category.setText(categories);
             }
-
-            category.setText(categories);
+            else {
+                category.setVisibility(View.GONE);
+            }
         }
 
         @Override

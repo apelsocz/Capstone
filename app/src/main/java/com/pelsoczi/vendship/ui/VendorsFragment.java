@@ -38,12 +38,18 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     public static final String TAG = VendorsFragment.class.getSimpleName();
     private static final String LOG_TAG = VendorsFragment.class.getSimpleName();
 
+    private static final String STATE_LAYOUT = "layoutState";
+    private static final String STATE_QUERY = "queryState";
+    private static final String STATE_SORT = "sortState";
+    private static final String STATE_VENDORS = "vendorState";
+
     private static final int LOADER_VENDOR = 0;
 
     private Bundle mSavedInstanceState;
     private RecyclerView mRecycler;
     private Adapter mAdapter;
     private ArrayList<Business> mBusinesses;
+    private String mJsonAsString;
 
     private FloatingActionButton mFAB;
 
@@ -62,7 +68,14 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-        mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : null;
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(STATE_VENDORS)) {
+                mBusinesses = (ArrayList<Business>) savedInstanceState.getSerializable(STATE_VENDORS);
+                updateRecyclerView();
+            }
+            mSavedInstanceState = savedInstanceState;
+        }
     }
 
     @Override
@@ -73,24 +86,30 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 //        ((VendorActivity)getActivity()).updateUI();
 
 //        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+        if (mSavedInstanceState == null) {
 
-//        mFAB = (FloatingActionButton)getActivity().findViewById(R.id.floating_action_btn);
-//        mFAB.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                yelp();
-//            }
-//        });
+        }
+        else {
+
+        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (mBusinesses != null && !mBusinesses.isEmpty()) {
+            outState.putSerializable(STATE_VENDORS, mBusinesses);
+        }
+        if (mRecycler.getLayoutManager() != null) {
+            outState.putParcelable(STATE_LAYOUT, mRecycler.getLayoutManager().onSaveInstanceState());
+        }
+        mSavedInstanceState = outState;
     }
 
     public void searchYelp(String jsonAsString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonAsString);
+            mJsonAsString = jsonAsString;
 
             String location = jsonObject.optString(Yelp.PARAM_LOCATION);
 
@@ -138,13 +157,10 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     private void updateRecyclerView() {
         initRecyclerView();
-//        if (mSavedInstanceState != null) {
-//            String savedSort = mSavedInstanceState.getString(STATE_SORT, "");
-//            if (savedSort.equals(Utility.getSortOrder(getActivity()))) {
-//                mRecycler.getLayoutManager()
-//                        .onRestoreInstanceState(mSavedInstanceState.getParcelable(STATE_LAYOUT));
-//            }
-//        }
+        if (mSavedInstanceState != null) {
+            mRecycler.getLayoutManager()
+                    .onRestoreInstanceState(mSavedInstanceState.getParcelable(STATE_LAYOUT));
+        }
 //        updateDetails();
     }
 
