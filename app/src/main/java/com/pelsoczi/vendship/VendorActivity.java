@@ -3,23 +3,18 @@ package com.pelsoczi.vendship;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.pelsoczi.vendship.ui.VendorsFragment;
 import com.pelsoczi.vendship.util.Yelp;
 
 public class VendorActivity extends AppCompatActivity {
 
-    public static final int SEARCH_YELP_REQUEST = 1;
-
     private boolean mTwoPane;
     private Toolbar mToolbar;
-    private FloatingActionButton mFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +25,16 @@ public class VendorActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
 
 //        mTwoPane = findViewById(R.id.container_detail) != null;
-
-        mFAB = (FloatingActionButton) findViewById(R.id.floating_action_btn);
-        mFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), SearchActivity.class);
-                startActivityForResult(intent, SEARCH_YELP_REQUEST);
-            }
-        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == SEARCH_YELP_REQUEST && resultCode == Activity.RESULT_OK) {
+        if (requestCode == Yelp.SEARCH_YELP_REQUEST && resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(Yelp.KEY_YELP)) {
                 VendorsFragment fragment = (VendorsFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.container_vendor);
                 fragment.searchYelp(data.getStringExtra(Yelp.KEY_YELP));
+                //// TODO: 16-10-02 Adapter onBindViewHolder, search additional by offset
             }
         }
     }
@@ -67,6 +54,14 @@ public class VendorActivity extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    public void doSearchActivity(String jsonAsString) {
+        Intent intent = new Intent(getBaseContext(), SearchActivity.class);
+        if (jsonAsString != null && !jsonAsString.isEmpty()) {
+            intent.putExtra(Yelp.KEY_YELP, jsonAsString);
+        }
+        startActivityForResult(intent, Yelp.SEARCH_YELP_REQUEST);
     }
 
 //    public updateUI() {

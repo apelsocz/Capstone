@@ -33,6 +33,8 @@ public class SearchActivity extends AppCompatActivity {
 
     public static final String TAG = SearchActivity.class.getSimpleName();
 
+    String mQueryJsonString;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +43,12 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
 
+        Intent launchIntent = getIntent();
+        if (launchIntent != null && launchIntent.hasExtra(Yelp.KEY_YELP)) {
+            mQueryJsonString = launchIntent.getStringExtra(Yelp.KEY_YELP);
+        }
+    }
 
     public static class SearchFragment extends Fragment {
 
@@ -94,7 +100,40 @@ public class SearchActivity extends AppCompatActivity {
             super.onActivityCreated(savedInstanceState);
             setHasOptionsMenu(true);
 
-            mLocation.setText(Utility.getPreferredLocation(getActivity()));
+            String keyword = "";
+            String location = Utility.getPreferredLocation(getActivity());
+            int progress = 0;
+
+            String queryJsonString = ((SearchActivity)getActivity()).mQueryJsonString;
+            if (queryJsonString != null && !queryJsonString.isEmpty()) {
+                try {
+                    JSONObject jsonObject = new JSONObject(queryJsonString);
+                    if (jsonObject.has(Yelp.PARAM_TERM)) {
+                        keyword = jsonObject.getString(Yelp.PARAM_TERM);
+                    }
+                    if (jsonObject.has(Yelp.PARAM_LOCATION)) {
+                        location = jsonObject.getString(Yelp.PARAM_LOCATION);
+                    }
+                    if (jsonObject.has(Yelp.PARAM_SORT_BY)) {
+                        if (jsonObject.getString(Yelp.PARAM_SORT_BY).equals("1")) {
+                            mSortDistance.setChecked(true);
+                        }
+                        else if (jsonObject.getString(Yelp.PARAM_SORT_BY).equals("2")) {
+                            mSortRating.setChecked(true);
+                        }
+                    }
+                    if (jsonObject.has(Yelp.PARAM_RADIUS)) {
+                        progress = Utility.getProgressForRadius(getActivity(),
+                                jsonObject.getString(Yelp.PARAM_RADIUS));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            mKeyword.setText(keyword);
+
+            mLocation.setText(location);
 
             if (!mSortDistance.isChecked() && !mSortRating.isChecked()) {
                 mSortGroup.check(R.id.search_sort_default);
@@ -112,8 +151,7 @@ public class SearchActivity extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {}
             });
-
-            //// TODO: 16-09-23 savedInstanceState
+            mDistanceSeek.setProgress(progress);
         }
 
         @Override
@@ -174,7 +212,6 @@ public class SearchActivity extends AppCompatActivity {
 
                 int progress = mDistanceSeek.getProgress();
                 if (progress != 0) {
-                    //// TODO: 16-09-27 remove decimal places
                     json.put(Yelp.PARAM_RADIUS, Utility.getPreferredConversion(getActivity(), progress));
                 }
             } catch (JSONException e) {

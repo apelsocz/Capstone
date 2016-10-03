@@ -29,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="72dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="56dp"
             android:paddingTop="4dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textColorPrimary"
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/vendor_name"
             android:layout_marginStart="72dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="56dp"
             android:paddingBottom="4dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:maxLines="1"
@@ -75,6 +75,17 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             tools:text="1738" />
 
+        <ImageView
+            android:id="@+id/vendor_star"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="2dp"
+            android:layout_marginEnd="16dp"
+            android:layout_alignParentEnd="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_bookmark_border_black_18dp"/>
+
     </RelativeLayout>
 
     <TextView
@@ -85,6 +96,7 @@
         android:layout_marginEnd="16dp"
         android:paddingTop="4dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+        android:textStyle="italic"
         android:textColor="@color/textColorSecondary"
         android:maxLines="3"
         tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />

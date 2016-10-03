@@ -15,11 +15,13 @@
     <string name="pref_distance_label">Conversion Units</string>
     <string name="pref_distance_key">distance</string>
     <string name="pref_distance_default">@string/pref_distance_miles</string>
-    <string name="pref_distance_label_miles">Miles</string>
-    <string name="pref_distance_label_kilometer">Kilometers</string>
     <string name="pref_distance_miles">miles</string>
     <string name="pref_distance_kilometer">kilometers</string>
+    <string name="pref_distance_miles_label">Miles</string>
+    <string name="pref_distance_kilometer_label">Kilometers</string>
+    <string name="pref_distance_miles_acronym">mi</string>
+    <string name="pref_distance_kilometer_acronym">km</string>
 
-    <string name="dialog_search_label">Search</string>
-    <string name="dialog_location_label">Location</string>
+    <string name="label_distance_default">Default</string>
+
 </resources>

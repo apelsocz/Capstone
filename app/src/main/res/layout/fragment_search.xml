@@ -161,7 +161,7 @@
                         android:paddingStart="4dp"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/textColorPrimary"
-                        tools:text="0 km" />
+                        android:text="@string/label_distance_default"/>
 
                     <SeekBar
                         android:id="@+id/search_distance_slider"

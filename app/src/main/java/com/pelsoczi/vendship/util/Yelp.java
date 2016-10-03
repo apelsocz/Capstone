@@ -4,6 +4,8 @@ public class Yelp {
 
     public static final String KEY_YELP = "yelpKey";
 
+    public static final int SEARCH_YELP_REQUEST = 1;
+
     /**
      * General Params
      * */

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.pelsoczi.vendship.BuildConfig;
 import com.pelsoczi.vendship.R;
+import com.pelsoczi.vendship.VendorActivity;
 import com.pelsoczi.vendship.util.Yelp;
 import com.yelp.clientlib.connection.YelpAPI;
 import com.yelp.clientlib.connection.YelpAPIFactory;
@@ -40,18 +41,17 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     private static final String STATE_LAYOUT = "layoutState";
     private static final String STATE_QUERY = "queryState";
-    private static final String STATE_SORT = "sortState";
+    private static final String STATE_OFFSET = "offsetState";
     private static final String STATE_VENDORS = "vendorState";
 
     private static final int LOADER_VENDOR = 0;
 
     private Bundle mSavedInstanceState;
+    private FloatingActionButton mFAB;
     private RecyclerView mRecycler;
     private Adapter mAdapter;
-    private ArrayList<Business> mBusinesses;
-    private String mJsonAsString;
-
-    private FloatingActionButton mFAB;
+    private ArrayList<Business> mVendors;
+    private String mQueryJsonString;
 
     public VendorsFragment() {}
 
@@ -71,53 +71,65 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
         if (savedInstanceState != null) {
             if (savedInstanceState.containsKey(STATE_VENDORS)) {
-                mBusinesses = (ArrayList<Business>) savedInstanceState.getSerializable(STATE_VENDORS);
+                mVendors = (ArrayList<Business>) savedInstanceState.getSerializable(STATE_VENDORS);
                 updateRecyclerView();
+            }
+            if (savedInstanceState.containsKey(STATE_QUERY)) {
+                mQueryJsonString = savedInstanceState.getString(STATE_QUERY);
             }
             mSavedInstanceState = savedInstanceState;
         }
+
+        mFAB = (FloatingActionButton) getActivity().findViewById(R.id.floating_action_btn);
+        mFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((VendorActivity)getActivity()).doSearchActivity(mQueryJsonString);
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         /** Update the Activity's title */
 //        ((VendorActivity)getActivity()).updateUI();
 
 //        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
-        if (mSavedInstanceState == null) {
-
-        }
-        else {
-
-        }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mBusinesses != null && !mBusinesses.isEmpty()) {
-            outState.putSerializable(STATE_VENDORS, mBusinesses);
+
+        if (mVendors != null && !mVendors.isEmpty()) {
+            outState.putSerializable(STATE_VENDORS, mVendors);
+        }
+        if (mQueryJsonString != null && !mQueryJsonString.equals("")) {
+            outState.putString(STATE_QUERY, mQueryJsonString);
         }
         if (mRecycler.getLayoutManager() != null) {
             outState.putParcelable(STATE_LAYOUT, mRecycler.getLayoutManager().onSaveInstanceState());
         }
+
         mSavedInstanceState = outState;
     }
 
     public void searchYelp(String jsonAsString) {
         try {
             JSONObject jsonObject = new JSONObject(jsonAsString);
-            mJsonAsString = jsonAsString;
+            mQueryJsonString = jsonAsString;
+
+            Map<String, String> params = new HashMap<>();
+
+            params.put(Yelp.PARAM_TERM, jsonObject.optString(Yelp.PARAM_TERM));
 
             String location = jsonObject.optString(Yelp.PARAM_LOCATION);
 
-            Map<String, String> params = new HashMap<>();
-            params.put(Yelp.PARAM_TERM, jsonObject.optString(Yelp.PARAM_TERM));
             if (jsonObject.has(Yelp.PARAM_SORT_BY)) {
                 params.put(Yelp.PARAM_SORT_BY, jsonObject.optString(Yelp.PARAM_SORT_BY));
             }
+
             if (jsonObject.has(Yelp.PARAM_RADIUS)) {
                 params.put(Yelp.PARAM_RADIUS, jsonObject.optString(Yelp.PARAM_RADIUS));
             }
@@ -135,11 +147,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
                 @Override
                 public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                     SearchResponse searchResponse = response.body();
-//                    ArrayList<Business> businesses = searchResponse.businesses();
-//                    for (Business busines : businesses) {
-//                        Log.i(TAG, busines.toString());
-//                    }
-                    mBusinesses = searchResponse.businesses();
+                    mVendors = searchResponse.businesses();
                     updateRecyclerView();
                 }
                 @Override
@@ -165,12 +173,11 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private void initRecyclerView() {
-        mAdapter = new Adapter(getActivity(), mBusinesses);
+        mAdapter = new Adapter(getActivity(), mVendors);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setItemAnimator(null);
         mRecycler.setLayoutManager(
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        Log.i(LOG_TAG, "initRecyclerView");
     }
 
     @Override

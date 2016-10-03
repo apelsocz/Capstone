@@ -36,7 +36,7 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
     @Override
     public int getItemViewType(int position) {
-        int viewType = R.layout.list_item_business;
+        int viewType = R.layout.list_item_vendor;
         return viewType;
     }
 
@@ -50,6 +50,10 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Business business = items.get(position);
         ((VendorViewHolder)holder).setBusiness(business);
+
+        if (position == items.size()-1) {
+
+        }
     }
 
     @Override
