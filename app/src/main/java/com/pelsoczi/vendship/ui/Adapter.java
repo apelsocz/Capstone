@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.pelsoczi.vendship.R;
+import com.pelsoczi.vendship.VendorActivity;
 import com.squareup.picasso.Picasso;
 import com.yelp.clientlib.entities.Business;
 
@@ -52,7 +53,7 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
         ((VendorViewHolder)holder).setBusiness(business);
 
         if (position == items.size()-1) {
-
+            //// TODO: 16-10-03 search yelp by offsetting results
         }
     }
 
@@ -89,6 +90,8 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
             snippet = (TextView) itemView.findViewById(R.id.vendor_snippet);
             category = (TextView) itemView.findViewById(R.id.vendor_category);
             image = (ImageView) itemView.findViewById(R.id.vendor_image);
+
+            itemView.setOnClickListener(this);
         }
 
         public void setBusiness(Business business) {
@@ -130,8 +133,8 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
         @Override
         public void onClick(View v) {
-//            VendorActivity activity = ((VendorActivity) context);
-//            activity.showDetails(business, position);
+            VendorActivity activity = ((VendorActivity) context);
+            activity.showDetails(business, position);
         }
     }
 }

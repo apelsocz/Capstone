@@ -8,8 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.pelsoczi.vendship.ui.DetailFragment;
 import com.pelsoczi.vendship.ui.VendorsFragment;
 import com.pelsoczi.vendship.util.Yelp;
+import com.yelp.clientlib.entities.Business;
 
 public class VendorActivity extends AppCompatActivity {
 
@@ -56,12 +58,19 @@ public class VendorActivity extends AppCompatActivity {
         return false;
     }
 
-    public void doSearchActivity(String jsonAsString) {
+    public void showSearch(String jsonAsString) {
         Intent intent = new Intent(getBaseContext(), SearchActivity.class);
         if (jsonAsString != null && !jsonAsString.isEmpty()) {
             intent.putExtra(Yelp.KEY_YELP, jsonAsString);
         }
         startActivityForResult(intent, Yelp.SEARCH_YELP_REQUEST);
+    }
+
+    public void showDetails(Business business, int index) {
+        Intent intent = new Intent(this, DetailActivity.class)
+                .putExtra(Business.class.getSimpleName(), business)
+                .putExtra(DetailFragment.VENDOR_INDEX, index);
+        startActivity(intent);
     }
 
 //    public updateUI() {

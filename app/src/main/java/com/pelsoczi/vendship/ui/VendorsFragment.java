@@ -84,7 +84,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
         mFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((VendorActivity)getActivity()).doSearchActivity(mQueryJsonString);
+                ((VendorActivity)getActivity()).showSearch(mQueryJsonString);
             }
         });
     }
