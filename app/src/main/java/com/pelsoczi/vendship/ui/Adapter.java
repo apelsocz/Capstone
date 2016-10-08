@@ -4,7 +4,9 @@ package com.pelsoczi.vendship.ui;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 
 import com.pelsoczi.vendship.R;
 import com.pelsoczi.vendship.VendorActivity;
+import com.pelsoczi.vendship.data.VendorContract;
+import com.pelsoczi.vendship.util.Yelp;
 import com.squareup.picasso.Picasso;
 import com.yelp.clientlib.entities.Business;
 

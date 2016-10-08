@@ -75,17 +75,6 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             tools:text="1738" />
 
-        <ImageView
-            android:id="@+id/vendor_star"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:padding="2dp"
-            android:layout_marginEnd="16dp"
-            android:layout_alignParentEnd="true"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_bookmark_border_black_18dp"/>
-
     </RelativeLayout>
 
     <TextView

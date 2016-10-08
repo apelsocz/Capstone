@@ -1,14 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_marginTop="?attr/actionBarSize">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        android:text="DETAIL !"/>
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/vendor_image"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitStart" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/vendor_headline_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vendor_image"
+            android:layout_marginBottom="16dp">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/vendor_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:textColor="@color/textColorPrimary"
+                    android:textSize="24sp"
+                    android:fontFamily="sans-serif-medium"
+                    tools:text="Yelp Mobile Business Name" />
+
+                <ImageView
+                    android:id="@+id/vendor_rating_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_below="@id/vendor_name"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/rating_0" />
+
+                <TextView
+                    android:id="@+id/vendor_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:layout_below="@id/vendor_name"
+                    android:layout_toEndOf="@id/vendor_rating_image"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:padding="4dp"
+                    android:paddingEnd="4dp"
+                    android:paddingStart="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    tools:text="1738" />
+
+                <TextView
+                    android:id="@+id/vendor_category"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/vendor_name"
+                    android:layout_toRightOf="@id/vendor_rating"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="4dp"
+                    android:paddingTop="4dp"
+                    android:textColor="@color/textColorSecondary"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-smallcaps"
+                    android:textStyle="bold"
+                    tools:text="Coffee &amp; Tea" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/vendor_detail_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/vendor_headline_card"
+            android:layout_marginBottom="4dp">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:columnCount="2">
+                <ImageView
+                    android:id="@+id/vendor_phone_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_phone_black_36dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"/>
+                <TextView
+                    android:id="@+id/vendor_phone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingEnd="88dp"
+                    android:padding="4dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/textColorPrimary"
+                    tools:text="(514) 708 - 4656"/>
+                <ImageView
+                    android:id="@+id/vendor_address_icon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_pin_drop_black_36dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"/>
+                <TextView
+                    android:id="@+id/vendor_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="88dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/textColorPrimary"
+                    tools:text="523 Broadway,\nNorth Beach/Telegraph Hill,\nSan Francisco, CA 94133" />
+                <ImageView
+                    android:id="@+id/vendor_snippet_image"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_portrait_black_36dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitStart" />
+                <TextView
+                    android:id="@+id/vendor_snippet"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="fill"
+                    android:gravity="center_vertical"
+                    android:paddingEnd="88dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/textColorPrimary"
+                    tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />
+                <Button
+                    android:id="@+id/detail_read_reviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="72dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_columnSpan="2"
+                    android:text="@string/label_detail_reviews"
+                    android:textColor="@android:color/primary_text_dark"
+                    android:background="@color/accentColor"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
+            </GridLayout>
+        </android.support.v7.widget.CardView>
+
+
+    </RelativeLayout>
+
+</ScrollView>

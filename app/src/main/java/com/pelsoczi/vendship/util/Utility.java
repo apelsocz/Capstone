@@ -4,8 +4,13 @@ package com.pelsoczi.vendship.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.util.StringBuilderPrinter;
 
 import com.pelsoczi.vendship.R;
+import com.yelp.clientlib.entities.Business;
+
+import java.util.ArrayList;
 
 public class Utility {
 
@@ -77,5 +82,38 @@ public class Utility {
             return 5;
         }
         return 0;
+    }
+
+    public static String getYelpLargeImageUrl(Business business) {
+        String s = "/s.jpg";
+        String m = "/m.jpg";
+        String ms = "/ms.jpg";
+        String o = "/o.jpg";
+        String uri = business.imageUrl();
+
+        if (uri.contains(ms)) {
+            uri = uri.replace(ms, o);
+        }
+        else if (uri.contains(s)) {
+            uri = uri.replace(s, o);
+        }
+        else if (uri.contains(m)) {
+            uri = uri.subSequence(uri.length()-m.length(), uri.length()).toString();
+        }
+
+        return uri;
+    }
+
+    public static String getYelpAddressString(Business business) {
+        if (business.location().displayAddress() != null) {
+            String address = "";
+            ArrayList<String> lines = business.location().displayAddress();
+            for (int i = 0; i < lines.size(); i++) {
+                address += lines.get(i);
+                address += i < lines.size()-1 ? "\n" : "" ;
+            }
+            return address;
+        }
+        return null;
     }
 }
