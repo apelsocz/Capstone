@@ -40,6 +40,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
+    compile 'com.facebook.stetho:stetho:1.4.1'
 
     compile 'com.yelp.clientlib:yelp-android:2.0.0'
 

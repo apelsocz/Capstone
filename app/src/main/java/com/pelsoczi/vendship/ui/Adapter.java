@@ -4,9 +4,7 @@ package com.pelsoczi.vendship.ui;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,8 +12,7 @@ import android.widget.TextView;
 
 import com.pelsoczi.vendship.R;
 import com.pelsoczi.vendship.VendorActivity;
-import com.pelsoczi.vendship.data.VendorContract;
-import com.pelsoczi.vendship.util.Yelp;
+import com.pelsoczi.vendship.util.Utility;
 import com.squareup.picasso.Picasso;
 import com.yelp.clientlib.entities.Business;
 
@@ -122,12 +119,8 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
             rating.setText(String.valueOf(business.reviewCount()));
 
-            String categories = "";
-            if (business.categories() != null) {
-                for (int i = 0; i < business.categories().size(); i++) {
-                    categories += business.categories().get(i).name();
-                    categories += i < business.categories().size()-1 ? ", " : "";
-                }
+            String categories = Utility.getYelpCategories(business);
+            if (categories != null) {
                 category.setText(categories);
             }
             else {

@@ -25,6 +25,7 @@
 
     <string name="label_distance_default">Default</string>
     <string name="label_detail_reviews">Read Reviews</string>
+    <string name="action_bookmark">Bookmark</string>
 
 
 </resources>

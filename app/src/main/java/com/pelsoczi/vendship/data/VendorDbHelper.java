@@ -15,7 +15,7 @@ public class VendorDbHelper extends SQLiteOpenHelper {
 
     // Database Info
     private static final String DATABASE_NAME = "vendor.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public static synchronized VendorDbHelper getInstance(Context context) {
         if (sInstance == null) {
@@ -33,6 +33,21 @@ public class VendorDbHelper extends SQLiteOpenHelper {
         final String CREATE_POSTS_TABLE = "CREATE TABLE " + VendorEntry.TABLE_NAME +
                 " (" +
                     VendorEntry._ID + " INTEGER PRIMARY KEY," +
+                    VendorEntry.COLUMN_VENDOR_YELP_ID + " TEXT NOT NULL," +
+                    VendorEntry.COLUMN_VENDOR_NAME + " TEXT NOT NULL," +
+                    VendorEntry.COLUMN_VENDOR_IMAGE + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_RATING + " TEXT NOT NULL," +
+                    VendorEntry.COLUMN_VENDOR_RATING_IMG + " TEXT NOT NULL," +
+                    VendorEntry.COLUMN_VENDOR_REVIEW_COUNT + " TEXT NOT NULL," +
+                    VendorEntry.COLUMN_VENDOR_CATEGORIES + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_PHONE + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_PHONE_DISPLAY + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_ADDRESS + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_LONGITUDE + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_LATITUDE + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_SNIPPET + " TEXT," +
+                    VendorEntry.COLUMN_VENDOR_SNIPPET_IMG + " TEXT," +
+                    " UNIQUE (" + VendorEntry.COLUMN_VENDOR_YELP_ID + ") ON CONFLICT REPLACE" +
                 ");";
 
         db.execSQL(CREATE_POSTS_TABLE);

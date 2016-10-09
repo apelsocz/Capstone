@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,10 +18,14 @@ import android.view.ViewGroup;
 import com.pelsoczi.vendship.BuildConfig;
 import com.pelsoczi.vendship.R;
 import com.pelsoczi.vendship.VendorActivity;
+import com.pelsoczi.vendship.data.VendorContract.VendorEntry;
 import com.pelsoczi.vendship.util.Yelp;
 import com.yelp.clientlib.connection.YelpAPI;
 import com.yelp.clientlib.connection.YelpAPIFactory;
 import com.yelp.clientlib.entities.Business;
+import com.yelp.clientlib.entities.Category;
+import com.yelp.clientlib.entities.Coordinate;
+import com.yelp.clientlib.entities.Location;
 import com.yelp.clientlib.entities.SearchResponse;
 
 import org.json.JSONException;
@@ -95,7 +100,9 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
         /** Update the Activity's title */
 //        ((VendorActivity)getActivity()).updateUI();
 
-//        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+        if (mQueryJsonString == null) {
+            getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+        }
     }
 
     @Override
@@ -182,14 +189,99 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return null;
+        switch (id) {
+            case LOADER_VENDOR:
+                return new CursorLoader(
+                        getActivity(),
+                        VendorEntry.CONTENT_URI,
+                        VendorEntry.PROJECTION_COLUMNS,
+                        null,
+                        null,
+                        VendorEntry._ID + " ASC"
+                );
+            default:
+                return null;
+        }
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {}
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data != null && data.moveToFirst()) {
+            mVendors = new ArrayList<Business>();
+            int yelpId = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_YELP_ID);
+            int name = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_NAME);
+            int image = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_IMAGE);
+            int rating = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_RATING);
+            int ratingImg = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_RATING_IMG);
+            int reviewCount = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_REVIEW_COUNT);
+            int category = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_CATEGORIES);
+            int phone = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_PHONE);
+            int phoneDisplay = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_PHONE_DISPLAY);
+            int address = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_ADDRESS);
+            int longitude = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_LONGITUDE);
+            int latitude = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_LATITUDE);
+            int snippet = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_SNIPPET);
+            int snippetImg = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_SNIPPET_IMG);
+            mVendors.clear();
+            do {
+                Business.Builder builder = Business.builder();
+
+                builder.id(data.getString(yelpId))
+                        .name(data.getString(name))
+                        .imageUrl(data.getString(image))
+                        .rating(data.getDouble(rating))
+                        .ratingImgUrlLarge(data.getString(ratingImg))
+                        .reviewCount(data.getInt(reviewCount));
+
+                if (!data.getString(phone).equals("")) {
+                    builder = builder
+                            .phone(data.getString(phone))
+                            .displayPhone(data.getString(phoneDisplay));
+                }
+
+                if (!data.getString(category).equals("")) {
+                    String value = data.getString(category);
+                    ArrayList<Category> list = new ArrayList<Category>();
+                    for (String string : value.split(",")) {
+                        list.add(Category.builder()
+                                .name(string)
+                                .alias("")
+                                .build());
+                    }
+                    builder = builder.categories(list);
+                }
+
+                if (!data.getString(address).equals("")) {
+                    ArrayList<String> list = new ArrayList<String>();
+                    list.add(data.getString(address));
+                    Coordinate coord = Coordinate.builder()
+                            .longitude(data.getDouble(longitude))
+                            .latitude(data.getDouble(latitude))
+                            .build();
+                    Location location = Location.builder()
+                            .displayAddress(list)
+                            .coordinate(coord)
+                            .build();
+                    builder = builder.location(location);
+                }
+
+                if (!data.getString(snippet).equals("")) {
+                    builder = builder
+                            .snippetText(data.getString(snippet))
+                            .snippetImageUrl(data.getString(snippetImg));
+                }
+
+                Business business = builder.build();
+                mVendors.add(business);
+            } while (data.moveToNext());
+            updateRecyclerView();
+        }
+    }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.i(LOG_TAG, "onLoaderReset");
     }
+
+
 }

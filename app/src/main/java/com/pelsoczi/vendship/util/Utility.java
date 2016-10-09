@@ -4,8 +4,6 @@ package com.pelsoczi.vendship.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
-import android.util.StringBuilderPrinter;
 
 import com.pelsoczi.vendship.R;
 import com.yelp.clientlib.entities.Business;
@@ -115,5 +113,16 @@ public class Utility {
             return address;
         }
         return null;
+    }
+
+    public static String getYelpCategories(Business business) {
+        String categories = "";
+        if (business.categories() != null) {
+            for (int i = 0; i < business.categories().size(); i++) {
+                categories += business.categories().get(i).name();
+                categories += i < business.categories().size()-1 ? ", " : "";
+            }
+        }
+        return categories;
     }
 }

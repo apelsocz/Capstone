@@ -11,6 +11,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".SplashActivity"
             android:configChanges="orientation"
@@ -20,10 +21,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".VendorActivity"
             android:configChanges="orientation"
             android:label="@string/app_name" />
+
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings">
@@ -31,6 +34,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".VendorActivity" />
         </activity>
+
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_activity_search">
@@ -38,11 +42,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".VendorActivity" />
         </activity>
+
         <activity android:name=".DetailActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".VendorActivity" />
         </activity>
+
+        <provider
+            android:authorities="com.pelsoczi.vendship.app"
+            android:name=".data.VendorProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>

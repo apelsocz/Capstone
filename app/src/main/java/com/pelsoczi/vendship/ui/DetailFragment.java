@@ -1,12 +1,14 @@
 package com.pelsoczi.vendship.ui;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.pelsoczi.vendship.R;
+import com.pelsoczi.vendship.data.VendorContract.VendorEntry;
 import com.pelsoczi.vendship.util.Utility;
 import com.squareup.picasso.Picasso;
 import com.yelp.clientlib.entities.Business;
@@ -29,6 +33,8 @@ public class DetailFragment extends Fragment {
     private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
     private Business business;
+    private boolean mIsFavorite;
+
     private ImageView image;
     private TextView name;
     private ImageView ratingImg;
@@ -80,6 +86,19 @@ public class DetailFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        Cursor cursor = getActivity().getContentResolver().query(
+                VendorEntry.CONTENT_URI,
+                VendorEntry.PROJECTION_COLUMNS,
+                VendorEntry.COLUMN_VENDOR_YELP_ID + " = ?",
+                new String[] {String.valueOf(business.id())},
+                null
+        );
+
+        mIsFavorite = cursor!= null && cursor.moveToFirst();
+        if (mIsFavorite) {
+            cursor.close();
+        }
+
         if (business.imageUrl() != null) {
             Picasso.with(getActivity())
                     .load(Utility.getYelpLargeImageUrl(business))
@@ -104,12 +123,8 @@ public class DetailFragment extends Fragment {
 
         rating.setText(String.valueOf(business.reviewCount()));
 
-        String categories = "";
-        if (business.categories() != null) {
-            for (int i = 0; i < business.categories().size(); i++) {
-                categories += business.categories().get(i).name();
-                categories += i < business.categories().size()-1 ? ", " : "";
-            }
+        String categories = Utility.getYelpCategories(business);
+        if (categories != null) {
             category.setText(categories);
         }
         else {
@@ -221,6 +236,9 @@ public class DetailFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
+        int iconRes = mIsFavorite ?
+                R.drawable.ic_bookmark_black_24dp : R.drawable.ic_bookmark_border_black_24dp;
+        menu.findItem(R.id.action_bookmark).setIcon(iconRes);
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -228,7 +246,76 @@ public class DetailFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_yelp) {
             createAttributionIntent();
+            return true;
+        }
+        else if (item.getItemId() == R.id.action_bookmark) {
+            if (!mIsFavorite) {
+                new SaveVendorTask().execute(business);
+                return true;
+            }
+            else {
+                new DeleteVendorTask().execute(business);
+                return true;
+            }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private class SaveVendorTask extends AsyncTask<Business, Void, Void> {
+        @Override
+        protected Void doInBackground(Business... params) {
+            Business business = params[0];
+
+            ContentValues values = new ContentValues();
+            values.put(VendorEntry.COLUMN_VENDOR_YELP_ID, business.id());
+            values.put(VendorEntry.COLUMN_VENDOR_NAME, business.name());
+            values.put(VendorEntry.COLUMN_VENDOR_IMAGE, Utility.getYelpLargeImageUrl(business));
+            values.put(VendorEntry.COLUMN_VENDOR_RATING, business.rating());
+            values.put(VendorEntry.COLUMN_VENDOR_RATING_IMG, business.ratingImgUrlLarge());
+            values.put(VendorEntry.COLUMN_VENDOR_REVIEW_COUNT, business.reviewCount());
+            values.put(VendorEntry.COLUMN_VENDOR_CATEGORIES, Utility.getYelpCategories(business));
+            boolean phone = business.displayPhone() != null;
+            values.put(VendorEntry.COLUMN_VENDOR_PHONE, phone ? business.phone() : "");
+            values.put(VendorEntry.COLUMN_VENDOR_PHONE_DISPLAY, phone ? business.displayPhone() : "");
+            boolean address = Utility.getYelpAddressString(business) != null;
+            values.put(VendorEntry.COLUMN_VENDOR_ADDRESS, address ?
+                    Utility.getYelpAddressString(business) : "");
+            values.put(VendorEntry.COLUMN_VENDOR_LONGITUDE, address ?
+                    String.valueOf(business.location().coordinate().longitude()) : "");
+            values.put(VendorEntry.COLUMN_VENDOR_LATITUDE, address ?
+                    String.valueOf(business.location().coordinate().latitude()) : "");
+            values.put(VendorEntry.COLUMN_VENDOR_SNIPPET, business.snippetText()!= null ?
+                    business.snippetText() : "");
+            values.put(VendorEntry.COLUMN_VENDOR_SNIPPET_IMG, business.snippetImageUrl());
+
+            getActivity().getContentResolver().insert(VendorEntry.CONTENT_URI, values);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mIsFavorite = !mIsFavorite;
+            Toast.makeText(getContext(), "INSERT", Toast.LENGTH_SHORT).show();
+            getActivity().supportInvalidateOptionsMenu();
+        }
+    }
+
+    private class DeleteVendorTask extends AsyncTask<Business, Void, Void> {
+        @Override
+        protected Void doInBackground(Business... params) {
+            String selection = VendorEntry.COLUMN_VENDOR_YELP_ID + " = ?";
+            String[] selectionArgs = new String[] {String.valueOf(business.id())};
+            getActivity().getContentResolver().delete(VendorEntry.CONTENT_URI, selection,
+                    selectionArgs);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            mIsFavorite = !mIsFavorite;
+            getActivity().supportInvalidateOptionsMenu();
+        }
     }
 }
