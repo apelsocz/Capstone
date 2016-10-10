@@ -131,6 +131,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
 
+            mKeyword.setSelectAllOnFocus(true);
             mKeyword.setText(keyword);
 
             mLocation.setText(location);

@@ -15,11 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pelsoczi.vendship.R;
+import com.pelsoczi.vendship.VendorActivity;
 import com.pelsoczi.vendship.data.VendorContract.VendorEntry;
 import com.pelsoczi.vendship.util.Utility;
 import com.squareup.picasso.Picasso;
@@ -46,6 +47,7 @@ public class DetailFragment extends Fragment {
     private TextView address;
     private ImageView snippetImg;
     private TextView snippet;
+    private Button reviews;
 
     public static DetailFragment newInstance(Business business, int index) {
         Bundle bundle = new Bundle();
@@ -79,6 +81,7 @@ public class DetailFragment extends Fragment {
         address = (TextView) rootView.findViewById(R.id.vendor_address);
         snippetImg = (ImageView) rootView.findViewById(R.id.vendor_snippet_image);
         snippet = (TextView) rootView.findViewById(R.id.vendor_snippet);
+        reviews = (Button) rootView.findViewById(R.id.detail_read_reviews);
         return rootView;
     }
 
@@ -137,7 +140,7 @@ public class DetailFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (business.phone() != null) {
-                        createPhoneIntent();
+                        dispatchPhoneIntent();
                     }
                 }
             };
@@ -156,7 +159,7 @@ public class DetailFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (business.location().coordinate() != null) {
-                        createMapIntent();
+                        dispatchMapIntent();
                     }
                 }
             };
@@ -181,9 +184,16 @@ public class DetailFragment extends Fragment {
             snippet.setVisibility(View.GONE);
             snippetImg.setVisibility(View.GONE);
         }
+
+        reviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dispatchAttributionIntent();
+            }
+        });
     }
 
-    private void createPhoneIntent() {
+    private void dispatchPhoneIntent() {
         String tel = "tel:";
 
         Intent intent = new Intent(Intent.ACTION_DIAL);
@@ -197,7 +207,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    private void createMapIntent() {
+    private void dispatchMapIntent() {
         String geo = "geo:";
         String lat = String.valueOf(business.location().coordinate().latitude());
         String lon = String.valueOf(business.location().coordinate().longitude());
@@ -215,7 +225,7 @@ public class DetailFragment extends Fragment {
         }
     }
 
-    private void createAttributionIntent() {
+    private void dispatchAttributionIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(business.mobileUrl()));
 
@@ -245,7 +255,7 @@ public class DetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_yelp) {
-            createAttributionIntent();
+            dispatchAttributionIntent();
             return true;
         }
         else if (item.getItemId() == R.id.action_bookmark) {
@@ -259,6 +269,10 @@ public class DetailFragment extends Fragment {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public int getShownIndex() {
+        return getArguments().getInt(VENDOR_INDEX, -1);
     }
 
     private class SaveVendorTask extends AsyncTask<Business, Void, Void> {
@@ -296,7 +310,6 @@ public class DetailFragment extends Fragment {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             mIsFavorite = !mIsFavorite;
-            Toast.makeText(getContext(), "INSERT", Toast.LENGTH_SHORT).show();
             getActivity().supportInvalidateOptionsMenu();
         }
     }
@@ -314,8 +327,13 @@ public class DetailFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
             mIsFavorite = !mIsFavorite;
             getActivity().supportInvalidateOptionsMenu();
+
+            if (getActivity() instanceof VendorActivity) {
+                ((VendorActivity) getActivity()).doDataUpdated();
+            }
         }
     }
 }

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -16,10 +14,21 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment class="com.pelsoczi.vendship.ui.VendorsFragment"
-        android:id="@+id/container_vendor"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <fragment class="com.pelsoczi.vendship.ui.VendorsFragment"
+            android:id="@+id/container_vendor"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"/>
+        <FrameLayout
+            android:id="@+id/container_detail"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"/>
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floating_action_btn"
@@ -28,7 +37,7 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:src="@drawable/ic_search_white_24dp"
-        app:layout_anchor="@id/container_vendor"
+        app:layout_anchor="@id/container_detail"
         app:layout_anchorGravity="bottom|right"
         app:fabSize="normal"
         app:elevation="@dimen/design_fab_elevation"

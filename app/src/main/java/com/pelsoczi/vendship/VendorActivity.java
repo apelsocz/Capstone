@@ -3,6 +3,7 @@ package com.pelsoczi.vendship;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,22 +22,21 @@ public class VendorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_vendors);
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
-//        mTwoPane = findViewById(R.id.container_detail) != null;
+        mTwoPane = findViewById(R.id.container_detail) != null;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Yelp.SEARCH_YELP_REQUEST && resultCode == Activity.RESULT_OK) {
             if (data.hasExtra(Yelp.KEY_YELP)) {
-                VendorsFragment fragment = (VendorsFragment) getSupportFragmentManager()
+                VendorsFragment vendors = (VendorsFragment) getSupportFragmentManager()
                         .findFragmentById(R.id.container_vendor);
-                fragment.searchYelp(data.getStringExtra(Yelp.KEY_YELP));
-                //// TODO: 16-10-02 Adapter onBindViewHolder, search additional by offset
+                vendors.searchYelp(data.getStringExtra(Yelp.KEY_YELP));
             }
         }
     }
@@ -67,18 +67,41 @@ public class VendorActivity extends AppCompatActivity {
     }
 
     public void showDetails(Business business, int index) {
-        Intent intent = new Intent(this, DetailActivity.class)
-                .putExtra(Business.class.getSimpleName(), business)
-                .putExtra(DetailFragment.VENDOR_INDEX, index);
-        startActivity(intent);
+        if (mTwoPane) {
+            DetailFragment detail = (DetailFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.fragment_detail);
+
+            if (detail == null || detail.getShownIndex() != index) {
+                detail = DetailFragment.newInstance(business, index);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.container_detail, detail, DetailFragment.TAG)
+                        .addToBackStack(DetailFragment.TAG)
+                        .commit();
+            }
+        }
+        else {
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(Business.class.getSimpleName(), business)
+                    .putExtra(DetailFragment.VENDOR_INDEX, index);
+            startActivity(intent);
+        }
     }
 
-//    public updateUI() {
-//        String title = getResources().getString(R.string.app_name);
-//        String subtitle = Utility.getSortLabel(this);
-//        int iconResId = Utility.getSortIconResId(this);
-//        mToolbar.setTitle(title);
-//        mToolbar.setSubtitle(subtitle);
-//        mToolbar.setLogo(iconResId);
-//    }
+    public void loadDetails(Business business, int index) {
+        if (mTwoPane) {
+            DetailFragment detail = DetailFragment.newInstance(business, index);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container_detail, detail, DetailFragment.TAG)
+                    .commitAllowingStateLoss();
+        }
+    }
+
+    public void doDataUpdated() {
+        VendorsFragment vendors = (VendorsFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.container_vendor);
+        vendors.doDataUpdated();
+
+        getSupportFragmentManager().popBackStackImmediate(DetailFragment.TAG,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE);
+    }
 }

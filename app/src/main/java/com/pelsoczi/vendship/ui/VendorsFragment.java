@@ -73,16 +73,26 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+        mSavedInstanceState = (savedInstanceState != null) ? savedInstanceState : null;
+    }
 
-        if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(STATE_VENDORS)) {
-                mVendors = (ArrayList<Business>) savedInstanceState.getSerializable(STATE_VENDORS);
-                updateRecyclerView();
+    @Override
+    public void onResume() {
+        super.onResume();
+        mVendors = null;
+
+        if (mSavedInstanceState == null) {
+            getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+        }
+        else {
+            if (mSavedInstanceState.containsKey(STATE_QUERY)) {
+                mQueryJsonString = mSavedInstanceState.getString(STATE_QUERY);
+                updateRecyclerView( !mSavedInstanceState.containsKey(STATE_VENDORS) ? null :
+                        (ArrayList<Business>) mSavedInstanceState.getSerializable(STATE_VENDORS));
             }
-            if (savedInstanceState.containsKey(STATE_QUERY)) {
-                mQueryJsonString = savedInstanceState.getString(STATE_QUERY);
+            else {
+                getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
             }
-            mSavedInstanceState = savedInstanceState;
         }
 
         mFAB = (FloatingActionButton) getActivity().findViewById(R.id.floating_action_btn);
@@ -92,17 +102,6 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
                 ((VendorActivity)getActivity()).showSearch(mQueryJsonString);
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        /** Update the Activity's title */
-//        ((VendorActivity)getActivity()).updateUI();
-
-        if (mQueryJsonString == null) {
-            getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
-        }
     }
 
     @Override
@@ -154,13 +153,13 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
                 @Override
                 public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
                     SearchResponse searchResponse = response.body();
-                    mVendors = searchResponse.businesses();
-                    updateRecyclerView();
+                    ArrayList<Business> list = searchResponse.businesses();
+                    updateRecyclerView(list);
                 }
                 @Override
                 public void onFailure(Call<SearchResponse> call, Throwable t) {
                     //// TODO: 16-09-21 handle http error
-                    Log.i(TAG, "onFailure");
+                    Log.i(LOG_TAG, "onFailure");
                     t.printStackTrace();
                 }
             };
@@ -170,21 +169,34 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
         }
     }
 
-    private void updateRecyclerView() {
-        initRecyclerView();
+    public void doDataUpdated() {
+        getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
+    }
+
+    private void updateRecyclerView(ArrayList<Business> list) {
+        initRecyclerView(list);
         if (mSavedInstanceState != null) {
             mRecycler.getLayoutManager()
                     .onRestoreInstanceState(mSavedInstanceState.getParcelable(STATE_LAYOUT));
         }
-//        updateDetails();
+        updateDetails();
     }
 
-    private void initRecyclerView() {
-        mAdapter = new Adapter(getActivity(), mVendors);
+    private void initRecyclerView(ArrayList<Business> list) {
+        mVendors = list;
+        mAdapter = new Adapter(getActivity(), list);
         mRecycler.setAdapter(mAdapter);
         mRecycler.setItemAnimator(null);
         mRecycler.setLayoutManager(
                 new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+    }
+
+    private void updateDetails() {
+        if (mVendors != null) {
+            if (mVendors.size() > 0) {
+                ((VendorActivity)getActivity()).loadDetails(mVendors.get(0), 0);
+            }
+        }
     }
 
     @Override
@@ -206,8 +218,8 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        ArrayList<Business> list = new ArrayList<>();
         if (data != null && data.moveToFirst()) {
-            mVendors = new ArrayList<Business>();
             int yelpId = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_YELP_ID);
             int name = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_NAME);
             int image = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_IMAGE);
@@ -222,7 +234,6 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
             int latitude = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_LATITUDE);
             int snippet = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_SNIPPET);
             int snippetImg = data.getColumnIndex(VendorEntry.COLUMN_VENDOR_SNIPPET_IMG);
-            mVendors.clear();
             do {
                 Business.Builder builder = Business.builder();
 
@@ -241,25 +252,25 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
                 if (!data.getString(category).equals("")) {
                     String value = data.getString(category);
-                    ArrayList<Category> list = new ArrayList<Category>();
+                    ArrayList<Category> categoryList = new ArrayList<Category>();
                     for (String string : value.split(",")) {
-                        list.add(Category.builder()
+                        categoryList.add(Category.builder()
                                 .name(string)
                                 .alias("")
                                 .build());
                     }
-                    builder = builder.categories(list);
+                    builder = builder.categories(categoryList);
                 }
 
                 if (!data.getString(address).equals("")) {
-                    ArrayList<String> list = new ArrayList<String>();
-                    list.add(data.getString(address));
+                    ArrayList<String> addressList = new ArrayList<String>();
+                    addressList.add(data.getString(address));
                     Coordinate coord = Coordinate.builder()
                             .longitude(data.getDouble(longitude))
                             .latitude(data.getDouble(latitude))
                             .build();
                     Location location = Location.builder()
-                            .displayAddress(list)
+                            .displayAddress(addressList)
                             .coordinate(coord)
                             .build();
                     builder = builder.location(location);
@@ -272,16 +283,14 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
                 }
 
                 Business business = builder.build();
-                mVendors.add(business);
+                list.add(business);
             } while (data.moveToNext());
-            updateRecyclerView();
         }
+        updateRecyclerView(list);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.i(LOG_TAG, "onLoaderReset");
     }
-
-
 }
