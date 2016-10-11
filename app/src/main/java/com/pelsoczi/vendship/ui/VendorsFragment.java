@@ -129,7 +129,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
         new SearchYelpTask().execute(jsonAsString);
     }
 
-    public void doDataUpdated() {
+    public void restartLoader() {
         getLoaderManager().restartLoader(LOADER_VENDOR, null, this);
     }
 
@@ -154,7 +154,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     private void updateDetails() {
         if (mVendors != null) {
             if (mVendors.size() > 0) {
-                ((VendorActivity)getActivity()).loadDetails(mVendors.get(0), 0);
+                ((VendorActivity)getActivity()).loadDetails(mVendors);
             }
         }
     }

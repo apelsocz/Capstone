@@ -35,8 +35,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textColorPrimary"
             android:textAlignment="viewStart"
-            android:maxLines="1"
-            tools:text="Four Barrel Coffee" />
+            android:maxLines="1" />
 
         <TextView
             android:id="@+id/vendor_category"
@@ -49,8 +48,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:maxLines="1"
             android:textColor="@color/textColorSecondary"
-            android:textAlignment="viewStart"
-            tools:text="Coffee &amp; Tea" />
+            android:textAlignment="viewStart"/>
 
         <ImageView
             android:id="@+id/vendor_rating_image"
@@ -75,8 +73,7 @@
             android:layout_marginEnd="16dp"
             android:paddingStart="4dp"
             android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            tools:text="1738" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
     </RelativeLayout>
 
@@ -91,8 +88,7 @@
         android:textStyle="italic"
         android:textColor="@color/textColorSecondary"
         android:maxLines="3"
-        android:textAlignment="viewStart"
-        tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />
+        android:textAlignment="viewStart"/>
 
     <View
         android:layout_width="match_parent"

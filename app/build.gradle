@@ -14,15 +14,23 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
+            debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
+            debuggable true
+            applicationIdSuffix ".debug"
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'YELP_CONSUMER_KEY', "\"\""
-        it.buildConfigField 'String', 'YELP_CONSUMER_SECRET', "\"\""
-        it.buildConfigField 'String', 'YELP_TOKEN', "\"\""
-        it.buildConfigField 'String', 'YELP_TOKEN_SECRET', "\"\""
+        it.buildConfigField 'String', 'YELP_CONSUMER_KEY', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
+        it.buildConfigField 'String', 'YELP_CONSUMER_SECRET', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
+        it.buildConfigField 'String', 'YELP_TOKEN', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
+        it.buildConfigField 'String', 'YELP_TOKEN_SECRET', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
     }
 
     packagingOptions {

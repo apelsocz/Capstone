@@ -83,23 +83,23 @@ public class Utility {
     }
 
     public static String getYelpLargeImageUrl(Business business) {
-        String s = "/s.jpg";
-        String m = "/m.jpg";
-        String ms = "/ms.jpg";
-        String o = "/o.jpg";
-        String uri = business.imageUrl();
+        String S = "/s.jpg";
+        String M = "/m.jpg";
+        String MS = "/ms.jpg";
+        String O = "/o.jpg";
+        String URI = business.imageUrl();
 
-        if (uri.contains(ms)) {
-            uri = uri.replace(ms, o);
+        if (URI.contains(MS)) {
+            URI = URI.replace(MS, O);
         }
-        else if (uri.contains(s)) {
-            uri = uri.replace(s, o);
+        else if (URI.contains(S)) {
+            URI = URI.replace(S, O);
         }
-        else if (uri.contains(m)) {
-            uri = uri.subSequence(uri.length()-m.length(), uri.length()).toString();
+        else if (URI.contains(M)) {
+            URI = URI.subSequence(URI.length()-M.length(), URI.length()).toString();
         }
 
-        return uri;
+        return URI;
     }
 
     public static String getYelpAddressString(Business business) {

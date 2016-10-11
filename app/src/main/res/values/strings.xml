@@ -36,4 +36,8 @@
     <string name="desc_search_keyword">Search box. Double tap to change Yelp search keywords</string>
 
     <string name="empty_vendors_list">No Vendor information available.</string>
+    <string name="label_search_keyword">Keyword</string>
+    <string name="label_search_default">Best Match</string>
+    <string name="label_search_distance">Distance</string>
+    <string name="label_search_rating">Highest Rating</string>
 </resources>

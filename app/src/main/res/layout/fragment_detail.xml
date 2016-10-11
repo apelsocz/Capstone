@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/fragment_detail"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
@@ -42,8 +40,7 @@
                     android:textColor="@color/textColorPrimary"
                     android:textSize="24sp"
                     android:fontFamily="sans-serif-medium"
-                    android:textAlignment="viewStart"
-                    tools:text="Yelp Mobile Business Name" />
+                    android:textAlignment="viewStart" />
 
                 <ImageView
                     android:id="@+id/vendor_rating_image"
@@ -70,8 +67,7 @@
                     android:padding="4dp"
                     android:paddingEnd="4dp"
                     android:paddingStart="4dp"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    tools:text="1738" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"/>
 
                 <TextView
                     android:id="@+id/vendor_category"
@@ -87,8 +83,7 @@
                     android:textSize="16sp"
                     android:fontFamily="sans-serif-smallcaps"
                     android:textStyle="bold"
-                    android:textAlignment="viewStart"
-                    tools:text="Coffee &amp; Tea" />
+                    android:textAlignment="viewStart"/>
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
@@ -128,8 +123,7 @@
                     android:padding="4dp"
                     android:textSize="16sp"
                     android:textColor="@color/textColorPrimary"
-                    android:textAlignment="viewStart"
-                    tools:text="(514) 708 - 4656"/>
+                    android:textAlignment="viewStart"/>
                 <ImageView
                     android:id="@+id/vendor_address_icon"
                     android:layout_width="40dp"
@@ -157,8 +151,7 @@
                     android:padding="4dp"
                     android:textSize="16sp"
                     android:textColor="@color/textColorPrimary"
-                    android:textAlignment="viewStart"
-                    tools:text="523 Broadway,\nNorth Beach/Telegraph Hill,\nSan Francisco, CA 94133" />
+                    android:textAlignment="viewStart" />
                 <ImageView
                     android:id="@+id/vendor_snippet_image"
                     android:layout_width="40dp"
@@ -184,8 +177,7 @@
                     android:padding="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/textColorPrimary"
-                    android:textAlignment="viewStart"
-                    tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />
+                    android:textAlignment="viewStart" />
                 <Button
                     android:id="@+id/detail_read_reviews"
                     android:layout_width="match_parent"
@@ -200,7 +192,6 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Button"/>
             </GridLayout>
         </android.support.v7.widget.CardView>
-
 
     </RelativeLayout>
 

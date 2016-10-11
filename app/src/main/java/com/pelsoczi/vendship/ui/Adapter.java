@@ -79,7 +79,6 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
         public VendorViewHolder(Context context, View itemView) {
             super(itemView);
             this.context = context;
-            position = getAdapterPosition();
 
             name = (TextView) itemView.findViewById(R.id.vendor_name);
             rating = (TextView) itemView.findViewById(R.id.vendor_rating);
@@ -93,6 +92,7 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
 
         public void setBusiness(Business business) {
             this.business = business;
+            position = getAdapterPosition();
 
             image.setImageBitmap(null);
             Picasso.with(context)

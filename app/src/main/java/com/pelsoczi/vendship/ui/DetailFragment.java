@@ -275,6 +275,10 @@ public class DetailFragment extends Fragment {
         return getArguments().getInt(VENDOR_INDEX, -1);
     }
 
+    public String getShownBusinessName() {
+        return business.name();
+    }
+
     private class SaveVendorTask extends AsyncTask<Business, Void, Void> {
         @Override
         protected Void doInBackground(Business... params) {
@@ -332,7 +336,7 @@ public class DetailFragment extends Fragment {
             getActivity().supportInvalidateOptionsMenu();
 
             if (getActivity() instanceof VendorActivity) {
-                ((VendorActivity) getActivity()).doDataUpdated();
+                ((VendorActivity) getActivity()).doDeleteBookmark();
             }
         }
     }
