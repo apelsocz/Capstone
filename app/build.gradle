@@ -4,7 +4,6 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
-
     defaultConfig {
         applicationId "com.pelsoczi.vendship"
         minSdkVersion 17
@@ -12,12 +11,21 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        config {
+            keyAlias 'vendship'
+            keyPassword 'vendship'
+            storeFile file('../android.jks')
+            storePassword 'vendship'
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
+            shrinkResources false
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
         debug {
             minifyEnabled false
@@ -32,7 +40,6 @@ android {
         it.buildConfigField 'String', 'YELP_TOKEN', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
         it.buildConfigField 'String', 'YELP_TOKEN_SECRET', "\"https://www.yelp.com/developers/v2/manage_api_keys\""
     }
-
     packagingOptions {
         exclude 'META-INF/NOTICE' // will not include NOTICE file
         exclude 'META-INF/LICENSE' // will not include LICENSE file
@@ -47,19 +54,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    debugCompile 'com.facebook.stetho:stetho:1.4.1'
-
+    compile 'com.facebook.stetho:stetho:1.4.1'
     compile 'com.yelp.clientlib:yelp-android:2.0.0'
-
     compile 'com.google.android.gms:play-services-location:8.4.0'
     compile 'com.google.android.gms:play-services-analytics:8.4.0'
-
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.android.support:cardview-v7:24.2.1'
-
     compile 'com.squareup.picasso:picasso:2.5.2'
 }
 

@@ -32,7 +32,7 @@ public class MyApplication extends Application {
 
         // Initialize components
         GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-        mTracker = analytics.newTracker(R.xml.global_tracker);
+        mTracker = analytics.newTracker("UA-85555093-1");
     }
 
     /**
@@ -43,7 +43,7 @@ public class MyApplication extends Application {
         if (mTracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
             // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
-            mTracker = analytics.newTracker(R.xml.global_tracker);
+            mTracker = analytics.newTracker("UA-85555093-1");
         }
         return mTracker;
     }

@@ -46,12 +46,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class SearchActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class SearchActivity extends AppCompatActivity implements LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String LOG_TAG = SearchActivity.class.getSimpleName();
 
     public static final String TAG = SearchActivity.class.getSimpleName();
+
+    private static final int REQUEST_PERMISSIONS = 1;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -109,20 +112,56 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         Log.i(LOG_TAG, "mGoogleApiClient, onConnectionFailed");
     }
 
+    private void checkPermissions() {
+
+        boolean permitted = ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+        if (permitted) {
+            requestLocation();
+        } else {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    },
+                    REQUEST_PERMISSIONS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_PERMISSIONS) {
+            boolean permitted = true;
+            for (int i : grantResults) {
+                if (i == PackageManager.PERMISSION_DENIED) {
+                    permitted = false;
+                    break;
+                }
+            }
+            if (permitted) {
+                requestLocation();
+            }
+        }
+    }
+
     private void requestLocation() {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(10000);
+        mLocationRequest.setNumUpdates(1);
 
-        if (ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[] {
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    }, 1);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return;
         }
         LocationServices.FusedLocationApi
                 .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -140,7 +179,6 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mLocationRequest.setNumUpdates(1);
     }
 
     public static class SearchFragment extends Fragment {
@@ -235,7 +273,7 @@ public class SearchActivity extends AppCompatActivity implements GoogleApiClient
                 @Override
                 public void onClick(View v) {
                     if (((SearchActivity) getActivity()).mGoogleApiClient.isConnected()) {
-                        ((SearchActivity)getActivity()).requestLocation();
+                        ((SearchActivity)getActivity()).checkPermissions();
                     }
                 }
             });
