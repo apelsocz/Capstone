@@ -1,9 +1,11 @@
 package com.pelsoczi.vendship.ui;
 
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -15,7 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.pelsoczi.vendship.BuildConfig;
+import com.pelsoczi.vendship.MyApplication;
 import com.pelsoczi.vendship.R;
 import com.pelsoczi.vendship.VendorActivity;
 import com.pelsoczi.vendship.data.VendorContract.VendorEntry;
@@ -46,7 +51,6 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
 
     private static final String STATE_LAYOUT = "layoutState";
     private static final String STATE_QUERY = "queryState";
-    private static final String STATE_OFFSET = "offsetState";
     private static final String STATE_VENDORS = "vendorState";
 
     private static final int LOADER_VENDOR = 0;
@@ -122,51 +126,7 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     public void searchYelp(String jsonAsString) {
-        try {
-            JSONObject jsonObject = new JSONObject(jsonAsString);
-            mQueryJsonString = jsonAsString;
-
-            Map<String, String> params = new HashMap<>();
-
-            params.put(Yelp.PARAM_TERM, jsonObject.optString(Yelp.PARAM_TERM));
-
-            String location = jsonObject.optString(Yelp.PARAM_LOCATION);
-
-            if (jsonObject.has(Yelp.PARAM_SORT_BY)) {
-                params.put(Yelp.PARAM_SORT_BY, jsonObject.optString(Yelp.PARAM_SORT_BY));
-            }
-
-            if (jsonObject.has(Yelp.PARAM_RADIUS)) {
-                params.put(Yelp.PARAM_RADIUS, jsonObject.optString(Yelp.PARAM_RADIUS));
-            }
-
-            YelpAPIFactory apiFactory = new YelpAPIFactory(
-                    BuildConfig.YELP_CONSUMER_KEY,
-                    BuildConfig.YELP_CONSUMER_SECRET,
-                    BuildConfig.YELP_TOKEN,
-                    BuildConfig.YELP_TOKEN_SECRET);
-
-            YelpAPI yelpAPI = apiFactory.createAPI();
-            Call<SearchResponse> call = yelpAPI.search(location, params);
-
-            Callback<SearchResponse> callback = new Callback<SearchResponse>() {
-                @Override
-                public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
-                    SearchResponse searchResponse = response.body();
-                    ArrayList<Business> list = searchResponse.businesses();
-                    updateRecyclerView(list);
-                }
-                @Override
-                public void onFailure(Call<SearchResponse> call, Throwable t) {
-                    //// TODO: 16-09-21 handle http error
-                    Log.i(LOG_TAG, "onFailure");
-                    t.printStackTrace();
-                }
-            };
-            call.enqueue(callback);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        new SearchYelpTask().execute(jsonAsString);
     }
 
     public void doDataUpdated() {
@@ -292,5 +252,66 @@ public class VendorsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.i(LOG_TAG, "onLoaderReset");
+    }
+
+
+    private class SearchYelpTask extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... params) {
+            final String jsonAsString = params[0];
+
+            try {
+                JSONObject jsonObject = new JSONObject(jsonAsString);
+
+                Map<String, String> yelpParams = new HashMap<>();
+
+                yelpParams.put(Yelp.PARAM_TERM, jsonObject.optString(Yelp.PARAM_TERM));
+
+                String location = jsonObject.optString(Yelp.PARAM_LOCATION);
+
+                if (jsonObject.has(Yelp.PARAM_SORT_BY)) {
+                    yelpParams.put(Yelp.PARAM_SORT_BY, jsonObject.optString(Yelp.PARAM_SORT_BY));
+                }
+
+                if (jsonObject.has(Yelp.PARAM_RADIUS)) {
+                    yelpParams.put(Yelp.PARAM_RADIUS, jsonObject.optString(Yelp.PARAM_RADIUS));
+                }
+
+                YelpAPIFactory apiFactory = new YelpAPIFactory(
+                        BuildConfig.YELP_CONSUMER_KEY,
+                        BuildConfig.YELP_CONSUMER_SECRET,
+                        BuildConfig.YELP_TOKEN,
+                        BuildConfig.YELP_TOKEN_SECRET);
+
+                YelpAPI yelpAPI = apiFactory.createAPI();
+                Call<SearchResponse> call = yelpAPI.search(location, yelpParams);
+
+                Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+                    @Override
+                    public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                        if (response.isSuccessful() && response.body().businesses().size() > 0) {
+                            SearchResponse searchResponse = response.body();
+                            ArrayList<Business> list = searchResponse.businesses();
+                            mQueryJsonString = jsonAsString;
+                            updateRecyclerView(list);
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<SearchResponse> call, Throwable t) {
+                        Snackbar.make(mRecycler, getContext().getString(R.string.error_yelp),
+                                Snackbar.LENGTH_LONG).show();
+                        Log.i(LOG_TAG, t.getMessage());
+                        Tracker tracker = MyApplication.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.ExceptionBuilder()
+                                .setDescription(LOG_TAG + ":\n" + t.getMessage())
+                                .build());
+                    }
+                };
+                call.enqueue(callback);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
     }
 }

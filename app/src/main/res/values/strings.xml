@@ -1,31 +1,39 @@
 <resources>
-    <string name="app_name">Vendship</string>
+    <string name="app_name" translatable="false">Vendship</string>
 
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_search">Search</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
-    <string name="action_yelp">Yelp!</string>
+    <string name="action_yelp" translatable="false">Yelp!</string>
+    <string name="action_bookmark">Bookmark</string>
 
     <string name="pref_location_label">Location</string>
-    <string name="pref_location_key">location</string>
+    <string name="pref_location_key" translatable="false">location</string>
     <string name="pref_location_default">TORONTO</string>
 
     <string name="pref_distance_category_title">Distance Measurement</string>
     <string name="pref_distance_label">Conversion Units</string>
-    <string name="pref_distance_key">distance</string>
+    <string name="pref_distance_key" translatable="false">distance</string>
     <string name="pref_distance_default">@string/pref_distance_miles</string>
-    <string name="pref_distance_miles">miles</string>
-    <string name="pref_distance_kilometer">kilometers</string>
+    <string name="pref_distance_miles" translatable="false">miles</string>
+    <string name="pref_distance_kilometer" translatable="false">kilometers</string>
     <string name="pref_distance_miles_label">Miles</string>
     <string name="pref_distance_kilometer_label">Kilometers</string>
-    <string name="pref_distance_miles_acronym">mi</string>
-    <string name="pref_distance_kilometer_acronym">km</string>
+    <string name="pref_distance_miles_acronym" translatable="false">mi</string>
+    <string name="pref_distance_kilometer_acronym" translatable="false">km</string>
 
     <string name="label_distance_default">Default</string>
     <string name="label_detail_reviews">Read Reviews</string>
-    <string name="action_bookmark">Bookmark</string>
+    <string name="error_yelp">Can\'t connect to Yelp.</string>
 
+    <string name="desc_business_image">Image of business from yelp</string>
+    <string name="desc_phone">Phone button. Double tap to dial number.</string>
+    <string name="desc_map">Map button. Double tap to browse.</string>
+    <string name="desc_review_image">Profile image of Yelp reviewer.</string>
+    <string name="desc_floating_action_button">Search button. Double tap to search Yelp.</string>
+    <string name="desc_search_keyword">Search box. Double tap to change Yelp search keywords</string>
 
+    <string name="empty_vendors_list">No Vendor information available.</string>
 </resources>

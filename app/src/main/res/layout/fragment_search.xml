@@ -35,7 +35,9 @@
                 android:layout_marginStart="8dp"
                 android:inputType="text"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                tools:text="Search term" />
+                android:textDirection="locale"
+                tools:text="Search term"
+                android:contentDescription="@string/desc_search_keyword"/>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
@@ -71,6 +73,7 @@
                         android:layout_marginStart="8dp"
                         android:inputType="text"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textDirection="locale"
                         tools:text="137 Gladstone Avenue, Toronto ON" />
                     <ImageView
                         android:id="@+id/search_location_icon"

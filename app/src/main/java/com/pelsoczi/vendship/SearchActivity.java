@@ -1,10 +1,17 @@
 package com.pelsoczi.vendship;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,20 +25,36 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.pelsoczi.vendship.util.Utility;
 import com.pelsoczi.vendship.util.Yelp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class SearchActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+public class SearchActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
+    private static final String LOG_TAG = SearchActivity.class.getSimpleName();
 
     public static final String TAG = SearchActivity.class.getSimpleName();
+
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
 
     String mQueryJsonString;
 
@@ -48,6 +71,76 @@ public class SearchActivity extends AppCompatActivity {
         if (launchIntent != null && launchIntent.hasExtra(Yelp.KEY_YELP)) {
             mQueryJsonString = launchIntent.getStringExtra(Yelp.KEY_YELP);
         }
+
+        // Create an instance of GoogleAPIClient.
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.i(LOG_TAG, "mGoogleApiClient, onConnected");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(LOG_TAG, "mGoogleApiClient, onConnectionSuspended");
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(LOG_TAG, "mGoogleApiClient, onConnectionFailed");
+    }
+
+    private void requestLocation() {
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(10000);
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[] {
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                    }, 1);
+        }
+        LocationServices.FusedLocationApi
+                .requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(),
+                    location.getLongitude(), 1);
+            SearchFragment search = (SearchFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.container_search);
+            search.setLocationCity(addresses.get(0).getLocality());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mLocationRequest.setNumUpdates(1);
     }
 
     public static class SearchFragment extends Fragment {
@@ -56,6 +149,7 @@ public class SearchActivity extends AppCompatActivity {
 
         private EditText mKeyword;
         private EditText mLocation;
+        private ImageView mCurrentLocation;
         private RadioGroup mSortGroup;
         private RadioButton mSortDefault;
         private RadioButton mSortDistance;
@@ -85,6 +179,7 @@ public class SearchActivity extends AppCompatActivity {
 
             mKeyword = (EditText) rootView.findViewById(R.id.search_keyword);
             mLocation = (EditText) rootView.findViewById(R.id.search_location);
+            mCurrentLocation = (ImageView) rootView.findViewById(R.id.search_location_icon);
             mSortGroup = (RadioGroup) rootView.findViewById(R.id.search_sort_group);
             mSortDefault = (RadioButton) rootView.findViewById(R.id.search_sort_default);
             mSortDistance = (RadioButton) rootView.findViewById(R.id.search_sort_distance);
@@ -136,6 +231,15 @@ public class SearchActivity extends AppCompatActivity {
 
             mLocation.setText(location);
 
+            mCurrentLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (((SearchActivity) getActivity()).mGoogleApiClient.isConnected()) {
+                        ((SearchActivity)getActivity()).requestLocation();
+                    }
+                }
+            });
+
             if (!mSortDistance.isChecked() && !mSortRating.isChecked()) {
                 mSortGroup.check(R.id.search_sort_default);
             }
@@ -166,7 +270,6 @@ public class SearchActivity extends AppCompatActivity {
         private void validateUI() {
             boolean enabled = !(mKeyword.length() == 0 || mLocation.length() == 0);
             mActionSearch.setVisible(enabled);
-            Log.i(TAG, String.valueOf(enabled));
         }
 
         @Override
@@ -213,7 +316,8 @@ public class SearchActivity extends AppCompatActivity {
 
                 int progress = mDistanceSeek.getProgress();
                 if (progress != 0) {
-                    json.put(Yelp.PARAM_RADIUS, Utility.getPreferredConversion(getActivity(), progress));
+                    json.put(Yelp.PARAM_RADIUS,
+                            Utility.getPreferredConversion(getActivity(), progress));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -222,6 +326,12 @@ public class SearchActivity extends AppCompatActivity {
                 result.putExtra(Yelp.KEY_YELP, json.toString());
                 getActivity().setResult(Activity.RESULT_OK, result);
                 getActivity().finish();
+            }
+        }
+
+        private void setLocationCity(String localicity) {
+            if (!mLocation.getText().toString().equals(localicity)) {
+                mLocation.setText(localicity);
             }
         }
     }

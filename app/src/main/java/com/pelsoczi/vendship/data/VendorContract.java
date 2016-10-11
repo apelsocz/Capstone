@@ -56,6 +56,22 @@ public class VendorContract {
                 COLUMN_VENDOR_SNIPPET_IMG
         };
 
+        public static final int INDEX_ID = 0;
+        public static final int INDEX_COLUMN_VENDOR_YELP_ID = 1;
+        public static final int INDEX_COLUMN_VENDOR_NAME = 2;
+        public static final int INDEX_COLUMN_VENDOR_IMAGE = 3;
+        public static final int INDEX_COLUMN_VENDOR_RATING = 4;
+        public static final int INDEX_COLUMN_VENDOR_RATING_IMG = 5;
+        public static final int INDEX_COLUMN_VENDOR_REVIEW_COUNT = 6;
+        public static final int INDEX_COLUMN_VENDOR_CATEGORIES = 7;
+        public static final int INDEX_COLUMN_VENDOR_PHONE = 8;
+        public static final int INDEX_COLUMN_VENDOR_PHONE_DISPLAY = 9;
+        public static final int INDEX_COLUMN_VENDOR_ADDRESS = 10;
+        public static final int INDEX_COLUMN_VENDOR_LONGITUDE = 11;
+        public static final int INDEX_COLUMN_VENDOR_LATITUDE = 12;
+        public static final int INDEX_COLUMN_VENDOR_SNIPPET = 13;
+        public static final int INDEX_COLUMN_VENDOR_SNIPPET_IMG = 14;
+
         public static Uri buildVendorUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }

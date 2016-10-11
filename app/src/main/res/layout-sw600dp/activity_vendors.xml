@@ -37,8 +37,9 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:src="@drawable/ic_search_white_24dp"
+        android:contentDescription="@string/desc_floating_action_button"
         app:layout_anchor="@id/container_detail"
-        app:layout_anchorGravity="bottom|right"
+        app:layout_anchorGravity="bottom|end"
         app:fabSize="normal"
         app:elevation="@dimen/design_fab_elevation"
         app:borderWidth="0dp" />

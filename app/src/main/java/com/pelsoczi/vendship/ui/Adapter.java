@@ -52,10 +52,6 @@ public class Adapter extends RecyclerView.Adapter<ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         Business business = items.get(position);
         ((VendorViewHolder)holder).setBusiness(business);
-
-        if (position == items.size()-1) {
-            //// TODO: 16-10-03 search yelp by offsetting results
-        }
     }
 
     @Override

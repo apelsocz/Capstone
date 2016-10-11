@@ -5,7 +5,8 @@
     android:id="@+id/fragment_detail"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:layout_marginTop="?attr/actionBarSize">
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layoutDirection="locale">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="240dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitStart" />
+            android:scaleType="fitStart"
+            android:contentDescription="@string/desc_business_image"/>
 
         <android.support.v7.widget.CardView
             android:id="@+id/vendor_headline_card"
@@ -26,7 +28,7 @@
             android:layout_marginBottom="16dp">
 
             <RelativeLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <TextView
@@ -40,6 +42,7 @@
                     android:textColor="@color/textColorPrimary"
                     android:textSize="24sp"
                     android:fontFamily="sans-serif-medium"
+                    android:textAlignment="viewStart"
                     tools:text="Yelp Mobile Business Name" />
 
                 <ImageView
@@ -75,7 +78,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/vendor_name"
-                    android:layout_toRightOf="@id/vendor_rating"
+                    android:layout_toEndOf="@id/vendor_rating"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="4dp"
@@ -84,6 +87,7 @@
                     android:textSize="16sp"
                     android:fontFamily="sans-serif-smallcaps"
                     android:textStyle="bold"
+                    android:textAlignment="viewStart"
                     tools:text="Coffee &amp; Tea" />
             </RelativeLayout>
         </android.support.v7.widget.CardView>
@@ -110,19 +114,21 @@
                     android:padding="4dp"
                     android:src="@drawable/ic_phone_black_36dp"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitStart"/>
+                    android:scaleType="fitStart"
+                    android:contentDescription="@string/desc_phone"/>
                 <TextView
                     android:id="@+id/vendor_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill"
-                    android:gravity="center_vertical"
+                    android:gravity="center_vertical|start"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:paddingEnd="88dp"
                     android:padding="4dp"
                     android:textSize="16sp"
                     android:textColor="@color/textColorPrimary"
+                    android:textAlignment="viewStart"
                     tools:text="(514) 708 - 4656"/>
                 <ImageView
                     android:id="@+id/vendor_address_icon"
@@ -137,19 +143,21 @@
                     android:adjustViewBounds="true"
                     android:scaleType="fitStart"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:clickable="true"/>
+                    android:clickable="true"
+                    android:contentDescription="@string/desc_map"/>
                 <TextView
                     android:id="@+id/vendor_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill"
-                    android:gravity="center_vertical"
+                    android:gravity="center_vertical|start"
                     android:paddingEnd="88dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:padding="4dp"
                     android:textSize="16sp"
                     android:textColor="@color/textColorPrimary"
+                    android:textAlignment="viewStart"
                     tools:text="523 Broadway,\nNorth Beach/Telegraph Hill,\nSan Francisco, CA 94133" />
                 <ImageView
                     android:id="@+id/vendor_snippet_image"
@@ -162,19 +170,21 @@
                     android:padding="4dp"
                     android:src="@drawable/ic_portrait_black_36dp"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitStart" />
+                    android:scaleType="fitStart"
+                    android:contentDescription="@string/desc_review_image"/>
                 <TextView
                     android:id="@+id/vendor_snippet"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="fill"
-                    android:gravity="center_vertical"
+                    android:gravity="center_vertical|start"
                     android:paddingEnd="88dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp"
                     android:padding="4dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/textColorPrimary"
+                    android:textAlignment="viewStart"
                     tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />
                 <Button
                     android:id="@+id/detail_read_reviews"

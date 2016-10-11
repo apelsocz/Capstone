@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "484723488924",
+    "project_id": "vendship"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:484723488924:android:6a110cc23899cf90",
+        "android_client_info": {
+          "package_name": "com.pelsoczi.vendship"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDAYGYJBeEsmFJtR25_i6lnl4_8fDzpI8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-85555093-1"
+          }
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

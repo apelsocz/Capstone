@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/vendor_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/primaryColor"
     android:paddingTop="4dp"
+    android:layoutDirection="locale"
     tools:context=".VendorActivity">
 
     <RelativeLayout
@@ -22,7 +22,8 @@
             android:padding="4dp"
             android:layout_marginStart="16dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitStart" />
+            android:scaleType="fitStart"
+            android:contentDescription="@string/desc_business_image"/>
 
         <TextView
             android:id="@+id/vendor_name"
@@ -33,6 +34,7 @@
             android:paddingTop="4dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/textColorPrimary"
+            android:textAlignment="viewStart"
             android:maxLines="1"
             tools:text="Four Barrel Coffee" />
 
@@ -47,6 +49,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:maxLines="1"
             android:textColor="@color/textColorSecondary"
+            android:textAlignment="viewStart"
             tools:text="Coffee &amp; Tea" />
 
         <ImageView
@@ -88,6 +91,7 @@
         android:textStyle="italic"
         android:textColor="@color/textColorSecondary"
         android:maxLines="3"
+        android:textAlignment="viewStart"
         tools:text="What would I do without Yelp?\nI wouldn't be HALF the foodie I've become it weren't for this business.    \nYelp makes it virtually effortless to discover new..." />
 
     <View
